@@ -1,0 +1,1 @@
+SELECT Name, PeopleKey FROM test.People
