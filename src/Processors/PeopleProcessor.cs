@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using dotnetcore.Models;
-using dotnetcore.Repositories;
+using dotnetcorecrud.Models;
+using dotnetcorecrud.Repositories;
 
-namespace dotnetcore.Processors
+namespace dotnetcorecrud.Processors
 {
     public class PeopleProcessor : IPeopleProcessor
     {

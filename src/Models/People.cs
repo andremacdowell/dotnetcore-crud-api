@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace dotnetcore.Models
+namespace dotnetcorecrud.Models
 {
     [DataContract]
     public class People

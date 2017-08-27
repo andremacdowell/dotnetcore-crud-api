@@ -7,10 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dapper;
-using dotnetcore.Commons;
-using dotnetcore.Models;
+using dotnetcorecrud.Commons;
+using dotnetcorecrud.Models;
 
-namespace dotnetcore.Repositories 
+namespace dotnetcorecrud.Repositories 
 {
     public class PeopleRepository : IPeopleRepository
     {
@@ -58,7 +58,9 @@ namespace dotnetcore.Repositories
 
         private string GetQueryFromResource(string sqlFileName)
         {
-            var resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream($"dotnetcore.Repositories.SQL.{sqlFileName}.sql");
+            var assemblyName = Assembly.GetEntryAssembly();
+            var resourceStream = 
+                assemblyName.GetManifestResourceStream($"dotnetcore-crud.Repositories.SQL.{sqlFileName}.sql");
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
                 return reader.ReadToEnd();

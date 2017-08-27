@@ -1,4 +1,4 @@
-namespace dotnetcore.Repositories 
+namespace dotnetcorecrud.Repositories 
 {
     public interface ITestingUnitOfWork
     {

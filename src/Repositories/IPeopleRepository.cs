@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using dotnetcore.Models;
+using dotnetcorecrud.Models;
 
-namespace dotnetcore.Repositories 
+namespace dotnetcorecrud.Repositories 
 {
     public interface IPeopleRepository
     {

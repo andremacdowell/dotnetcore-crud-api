@@ -1,4 +1,4 @@
-namespace dotnetcore.Commons
+namespace dotnetcorecrud.Commons
 {
     public class DbConfiguration
     {

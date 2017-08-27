@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using dotnetcore.Models;
-using dotnetcore.Processors;
+using dotnetcorecrud.Models;
+using dotnetcorecrud.Processors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace dotnetcore.Controllers
+namespace dotnetcorecrud.Controllers
 {
     [Route("api/[controller]")]
     public class PeopleController : Controller

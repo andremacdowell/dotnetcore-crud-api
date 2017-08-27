@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using dotnetcore.Commons;
+using dotnetcorecrud.Commons;
 
-namespace dotnetcore.Repositories 
+namespace dotnetcorecrud.Repositories 
 {
     public class TestingUnitOfWork : ITestingUnitOfWork
     {
