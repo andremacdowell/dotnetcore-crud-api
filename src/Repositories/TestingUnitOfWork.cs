@@ -5,6 +5,8 @@ namespace dotnetcorecrud.Repositories
 {
     public class TestingUnitOfWork : ITestingUnitOfWork
     {
+        private const string DbName = "TestingDatabase"; 
+
         private IDictionary<string, DbConfiguration> _dbConfiguration;
 
         public TestingUnitOfWork()
@@ -25,7 +27,7 @@ namespace dotnetcorecrud.Repositories
             {
                 if (_peopleRepository == null)
                 {
-                    _peopleRepository = new PeopleRepository(_dbConfiguration["TestingDatabase"]);
+                    _peopleRepository = new PeopleRepository(_dbConfiguration[DbName]);
                 }
 
                 return _peopleRepository;

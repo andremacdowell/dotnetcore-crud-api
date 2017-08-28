@@ -12,33 +12,10 @@ using dotnetcorecrud.Models;
 
 namespace dotnetcorecrud.Repositories 
 {
-    public class PeopleRepository : IPeopleRepository
+    public class PeopleRepository : BaseRepository, IPeopleRepository
     {
-        private string _connectionString;
-
-        private SqlConnection _connection;
-    
-        public PeopleRepository(DbConfiguration dbConfiguration)
+        public PeopleRepository(DbConfiguration dbConfiguration) : base(dbConfiguration)
         {
-            _connectionString = dbConfiguration.ConnectionString;
-        }
-
-        private IDbConnection Connection
-        {
-            get
-            {
-                if (_connection == null) 
-                {
-                    _connection = new SqlConnection(_connectionString);
-                }
-
-                if (_connection.State != ConnectionState.Open)
-                {
-                    _connection.Open();
-                }
-
-                return _connection;
-            }
         }
 
         public IEnumerable<People> GetAll()
@@ -54,17 +31,6 @@ namespace dotnetcorecrud.Repositories
             parameters.Add("peopleKey", peopleKey, DbType.Guid);
 
             return Connection.Query<People>(query, parameters).ToList().FirstOrDefault();
-        }
-
-        private string GetQueryFromResource(string sqlFileName)
-        {
-            var assemblyName = Assembly.GetEntryAssembly();
-            var resourceStream = 
-                assemblyName.GetManifestResourceStream($"dotnetcore-crud.Repositories.SQL.{sqlFileName}.sql");
-            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-            {
-                return reader.ReadToEnd();
-            }
         }
     }
 }
