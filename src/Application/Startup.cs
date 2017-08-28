@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace dotnetcorecrud
+namespace dotnetcorecrud.Application
 {
     public class Startup
     {
@@ -36,37 +36,38 @@ namespace dotnetcorecrud
 
         private void IntegrateDependencyInjector(IServiceCollection services)
         {
-            Dictionary<string, DbConfiguration> dbConfiguration = BuildDbConfiguration();
+            IDictionary<string, DbConfiguration> dbConfigurations = BuildDbConfiguration();
 
             // Add Units of Work
-            services.AddSingleton<ITestingUnitOfWork, TestingUnitOfWork>((serviceProvider) => new TestingUnitOfWork(dbConfiguration));
+            services.AddSingleton<ITestingUnitOfWork, TestingUnitOfWork>(
+                (serviceProvider) => new TestingUnitOfWork(dbConfigurations)
+            );
             
             // Add Processors
             services.AddSingleton<IPeopleProcessor, PeopleProcessor>();
         }
 
-        private Dictionary<string, DbConfiguration> BuildDbConfiguration()
+        private IDictionary<string, DbConfiguration> BuildDbConfiguration()
         {
-            string[] dbs = { "TestingDatabase" };
-            var allConfiguration = Configuration.GetChildren().ToList();
-            
-            IConfigurationSection dbConfigurationSections = (
-                from config in allConfiguration where config.Key == "DBConfigurations" select config
-            ).FirstOrDefault();
-            
-            var dbConfiguration = new Dictionary<string, DbConfiguration>();
-            foreach (string db in dbs)
+            IEnumerable<IConfigurationSection> allConfiguration =
+                Configuration.GetChildren().ToList();
+            IConfigurationSection dbConfigurationSections = 
+                allConfiguration.Where(x => x.Key == "DBConfigurations").FirstOrDefault();
+            IDictionary<string, DbConfiguration> dbConfigurations =
+                new Dictionary<string, DbConfiguration>();
+
+            foreach (IConfigurationSection section in dbConfigurationSections.GetChildren())
             {
-                dbConfiguration.Add("TestingDatabase", new DbConfiguration()
+                dbConfigurations.Add(section.Key, new DbConfiguration()
                 {
-                    ConnectionString = dbConfigurationSections.GetSection(db).GetSection("ConnectionString").Value,
-                    ConnectionTimeout = Int32.Parse(dbConfigurationSections.GetSection(db).GetValue("ConnectionTimeout", "0")),
-                    BulkInsertTimeout = Int32.Parse(dbConfigurationSections.GetSection(db).GetValue("BulkInsertTimeout", "0")),
-                    BulkUpdateTimeout = Int32.Parse(dbConfigurationSections.GetSection(db).GetValue("BulkUpdateTimeout", "0"))
+                    ConnectionString = section.GetValue<string>("ConnectionString", ""),
+                    ConnectionTimeout = section.GetValue<int>("ConnectionTimeout", 0),
+                    BulkInsertTimeout = section.GetValue<int>("BulkInsertTimeout", 0),
+                    BulkUpdateTimeout = section.GetValue<int>("BulkUpdateTimeout", 0)
                 });
             }
 
-            return dbConfiguration;
+            return dbConfigurations;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
