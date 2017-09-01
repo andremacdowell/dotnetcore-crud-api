@@ -1,13 +1,21 @@
+using System.Collections.Generic;
+
 namespace dotnetcorecrud.Infrastructure.Configuration
 {
-    public class DatabaseConfiguration
+    public class DatabaseConfiguration : IDatabaseConfiguration
     {
-        public string ConnectionString;
+        public DatabaseConfiguration()
+        {
+        }
 
-        public int ConnectionTimeout;
+        public string DatabaseName { get; set; }
+
+        public string ConnectionString { get; set; }
+
+        public int ConnectionTimeout  { get; set; }
         
-        public int BulkInsertTimeout;
+        public int BulkInsertTimeout  { get; set; }
         
-        public int BulkUpdateTimeout;
+        public int UpdateTimeout  { get; set; } 
     }
 }

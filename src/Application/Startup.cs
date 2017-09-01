@@ -19,25 +19,29 @@ namespace dotnetcorecrud.Application
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment hostingEnvironment)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(hostingEnvironment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-
-            IntegrateDependencyInjector(services);
-        }
-
-        private void IntegrateDependencyInjector(IServiceCollection services)
-        {
-            IDictionary<string, DatabaseConfiguration> databaseConfigurations = BuildDbConfiguration();
-
+            IEnumerable<IDatabaseConfiguration> databaseConfigurations = new List<DatabaseConfiguration>();
+            foreach(IConfigurationSection configurationSection in Configuration.GetSection("DatabaseConfigurations").GetChildren())
+            {
+                IDatabaseConfiguration test = new DatabaseConfiguration().Map(configurationSection);
+                databaseConfigurations = databaseConfigurations.Append(test);
+            }
+            
             // Add Units of Work
             services.AddSingleton<ITestingUnitOfWork, TestingUnitOfWork>(
                 (serviceProvider) => new TestingUnitOfWork(databaseConfigurations)
@@ -45,29 +49,8 @@ namespace dotnetcorecrud.Application
             
             // Add Processors
             services.AddSingleton<IPeopleProcessor, PeopleProcessor>();
-        }
 
-        private IDictionary<string, DatabaseConfiguration> BuildDbConfiguration()
-        {
-            IEnumerable<IConfigurationSection> allConfiguration =
-                Configuration.GetChildren().ToList();
-            IConfigurationSection dbConfigurationSections = 
-                allConfiguration.Where(x => x.Key == "DatabaseConfigurations").FirstOrDefault();
-            IDictionary<string, DatabaseConfiguration> databaseConfigurations =
-                new Dictionary<string, DatabaseConfiguration>();
-
-            foreach (IConfigurationSection section in dbConfigurationSections.GetChildren())
-            {
-                databaseConfigurations.Add(section.Key, new DatabaseConfiguration()
-                {
-                    ConnectionString = section.GetValue<string>("ConnectionString", ""),
-                    ConnectionTimeout = section.GetValue<int>("ConnectionTimeout", 0),
-                    BulkInsertTimeout = section.GetValue<int>("BulkInsertTimeout", 0),
-                    BulkUpdateTimeout = section.GetValue<int>("BulkUpdateTimeout", 0)
-                });
-            }
-
-            return databaseConfigurations;
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

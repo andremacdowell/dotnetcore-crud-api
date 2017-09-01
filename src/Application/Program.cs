@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace dotnetcorecrud.Application
-{
+{   
     public class Program
     {
         public static void Main(string[] args)
@@ -19,6 +19,8 @@ namespace dotnetcorecrud.Application
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
     }

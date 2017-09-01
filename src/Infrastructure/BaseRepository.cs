@@ -13,7 +13,7 @@ namespace dotnetcorecrud.Infrastructure
 
         protected SqlConnection _connection;
 
-        public BaseRepository(DatabaseConfiguration databaseConfiguration)
+        public BaseRepository(IDatabaseConfiguration databaseConfiguration)
         {
             _connectionString = databaseConfiguration.ConnectionString;
         }

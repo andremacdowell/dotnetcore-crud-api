@@ -15,7 +15,7 @@ namespace dotnetcorecrud.Infrastructure.Repositories
 {
     public class PeopleRepository : BaseRepository, IPeopleRepository
     {
-        public PeopleRepository(DatabaseConfiguration databaseConfiguration) : base(databaseConfiguration)
+        public PeopleRepository(IDatabaseConfiguration databaseConfiguration) : base(databaseConfiguration)
         {
         }
 

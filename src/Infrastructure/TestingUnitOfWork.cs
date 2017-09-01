@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using dotnetcorecrud.Infrastructure.Configuration;
 using dotnetcorecrud.Infrastructure.Repositories;
 
@@ -6,18 +7,19 @@ namespace dotnetcorecrud.Infrastructure
 {
     public class TestingUnitOfWork : ITestingUnitOfWork
     {
-        private const string DbName = "TestingDatabase"; 
+        private string TestingDatabaseName = "TestingDatabase";
 
-        private IDictionary<string, DatabaseConfiguration> _databaseConfiguration;
+        private IDatabaseConfiguration _testingDatabaseConfiguration;
 
         public TestingUnitOfWork()
         {
 
         }
 
-        public TestingUnitOfWork(IDictionary<string, DatabaseConfiguration> databaseConfiguration)
+        public TestingUnitOfWork(IEnumerable<IDatabaseConfiguration> databaseConfiguration)
         {
-            _databaseConfiguration = databaseConfiguration;
+            _testingDatabaseConfiguration = 
+                databaseConfiguration.Where(x => x.DatabaseName == TestingDatabaseName).FirstOrDefault();
         }
 
         private IPeopleRepository _peopleRepository;
@@ -28,7 +30,7 @@ namespace dotnetcorecrud.Infrastructure
             {
                 if (_peopleRepository == null)
                 {
-                    _peopleRepository = new PeopleRepository(_databaseConfiguration[DbName]);
+                    _peopleRepository = new PeopleRepository(_testingDatabaseConfiguration);
                 }
 
                 return _peopleRepository;
