@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using dotnetcorecrud.DomainModel;
 using dotnetcorecrud.DomainModel.DTO;
-using dotnetcorecrud.Infrastructure;
+using dotnetcorecrud.Infrastructure.Repositories;
 
 namespace dotnetcorecrud.Processors
 {
     public class PeopleProcessor : IPeopleProcessor
     {
-        private readonly ITestingUnitOfWork _testingUnitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PeopleProcessor(ITestingUnitOfWork testingUnitOfWork)
+        public PeopleProcessor(IUnitOfWork unitOfWork)
         {
-            _testingUnitOfWork = testingUnitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         public IEnumerable<People> GetAllPeople()
@@ -21,11 +21,11 @@ namespace dotnetcorecrud.Processors
             IEnumerable<People> result = new List<People>();
 
             IEnumerable<PeopleQueryResponse> queryResponse =
-                _testingUnitOfWork.PeopleRepository.GetAll();
+                _unitOfWork.PeopleRepository.GetAll();
             
-            foreach(PeopleQueryResponse peeps in queryResponse)
+            foreach(PeopleQueryResponse person in queryResponse)
             {
-                result.Append(new People() { Name = peeps.Name, PeopleKey = peeps.PeopleKey } );
+                result = result.Append(new People() { Name = person.Name, PeopleKey = person.PeopleKey } );
             }
 
             return result;
@@ -36,7 +36,7 @@ namespace dotnetcorecrud.Processors
             People result = null;
             
             PeopleQueryResponse queryResponse = 
-                _testingUnitOfWork.PeopleRepository.GetPerson(peopleKey);
+                _unitOfWork.PeopleRepository.GetPerson(peopleKey);
         
             result = new People() { Name = queryResponse.Name, PeopleKey = queryResponse.PeopleKey };
 

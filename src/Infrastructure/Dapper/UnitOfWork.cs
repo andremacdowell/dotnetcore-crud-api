@@ -3,24 +3,24 @@ using System.Linq;
 using dotnetcorecrud.Infrastructure.Configuration;
 using dotnetcorecrud.Infrastructure.Repositories;
 
-namespace dotnetcorecrud.Infrastructure 
+namespace dotnetcorecrud.Infrastructure.Dapper
 {
-    public class TestingUnitOfWork : ITestingUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private string TestingDatabaseName = "TestingDatabase";
 
         private IDatabaseConfiguration _testingDatabaseConfiguration;
 
-        public TestingUnitOfWork()
-        {
+        private IEnumerable<IDatabaseConfiguration> _databaseConfigurations;
 
-        }
-
-        public TestingUnitOfWork(IEnumerable<IDatabaseConfiguration> databaseConfiguration)
+        public UnitOfWork(IEnumerable<IDatabaseConfiguration> databaseConfigurations)
         {
+            _databaseConfigurations = databaseConfigurations;
             _testingDatabaseConfiguration = 
-                databaseConfiguration.Where(x => x.DatabaseName == TestingDatabaseName).FirstOrDefault();
+                _databaseConfigurations.Where(x => x.DatabaseName == TestingDatabaseName).FirstOrDefault();
         }
+
+        public IEnumerable<IDatabaseConfiguration> DatabaseConfigurations => _databaseConfigurations;
 
         private IPeopleRepository _peopleRepository;
 
