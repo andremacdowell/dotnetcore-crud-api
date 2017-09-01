@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using dotnetcorecrud.Models;
+using dotnetcorecrud.DomainModel;
 
 namespace dotnetcorecrud.Processors
 {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using dotnetcorecrud.Commons;
+using dotnetcorecrud.Infrastructure.Configuration;
 using dotnetcorecrud.Processors;
-using dotnetcorecrud.Repositories;
+using dotnetcorecrud.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,29 +36,29 @@ namespace dotnetcorecrud.Application
 
         private void IntegrateDependencyInjector(IServiceCollection services)
         {
-            IDictionary<string, DbConfiguration> dbConfigurations = BuildDbConfiguration();
+            IDictionary<string, DatabaseConfiguration> databaseConfigurations = BuildDbConfiguration();
 
             // Add Units of Work
             services.AddSingleton<ITestingUnitOfWork, TestingUnitOfWork>(
-                (serviceProvider) => new TestingUnitOfWork(dbConfigurations)
+                (serviceProvider) => new TestingUnitOfWork(databaseConfigurations)
             );
             
             // Add Processors
             services.AddSingleton<IPeopleProcessor, PeopleProcessor>();
         }
 
-        private IDictionary<string, DbConfiguration> BuildDbConfiguration()
+        private IDictionary<string, DatabaseConfiguration> BuildDbConfiguration()
         {
             IEnumerable<IConfigurationSection> allConfiguration =
                 Configuration.GetChildren().ToList();
             IConfigurationSection dbConfigurationSections = 
-                allConfiguration.Where(x => x.Key == "DBConfigurations").FirstOrDefault();
-            IDictionary<string, DbConfiguration> dbConfigurations =
-                new Dictionary<string, DbConfiguration>();
+                allConfiguration.Where(x => x.Key == "DatabaseConfigurations").FirstOrDefault();
+            IDictionary<string, DatabaseConfiguration> databaseConfigurations =
+                new Dictionary<string, DatabaseConfiguration>();
 
             foreach (IConfigurationSection section in dbConfigurationSections.GetChildren())
             {
-                dbConfigurations.Add(section.Key, new DbConfiguration()
+                databaseConfigurations.Add(section.Key, new DatabaseConfiguration()
                 {
                     ConnectionString = section.GetValue<string>("ConnectionString", ""),
                     ConnectionTimeout = section.GetValue<int>("ConnectionTimeout", 0),
@@ -67,7 +67,7 @@ namespace dotnetcorecrud.Application
                 });
             }
 
-            return dbConfigurations;
+            return databaseConfigurations;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
