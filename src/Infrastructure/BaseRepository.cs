@@ -3,9 +3,9 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using dotnetcorecrud.Commons;
+using dotnetcorecrud.Infrastructure.Configuration;
 
-namespace dotnetcorecrud.Repositories
+namespace dotnetcorecrud.Infrastructure
 {
     public class BaseRepository
     {
@@ -13,9 +13,9 @@ namespace dotnetcorecrud.Repositories
 
         protected SqlConnection _connection;
 
-        public BaseRepository(DbConfiguration dbConfiguration)
+        public BaseRepository(DatabaseConfiguration databaseConfiguration)
         {
-            _connectionString = dbConfiguration.ConnectionString;
+            _connectionString = databaseConfiguration.ConnectionString;
         }
 
         protected IDbConnection Connection
@@ -40,7 +40,7 @@ namespace dotnetcorecrud.Repositories
         {
             var resourceStream = 
                 Assembly.GetEntryAssembly()
-                        .GetManifestResourceStream($"dotnetcore-crud.Repositories.SQL.{sqlFileName}.sql");
+                        .GetManifestResourceStream($"dotnetcore-crud.Infrastructure.SQL.{sqlFileName}.sql");
 
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {

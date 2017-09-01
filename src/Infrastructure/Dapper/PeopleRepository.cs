@@ -7,30 +7,31 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dapper;
-using dotnetcorecrud.Commons;
-using dotnetcorecrud.Models;
+using dotnetcorecrud.Infrastructure.Configuration;
+using dotnetcorecrud.Infrastructure;
+using dotnetcorecrud.DomainModel.DTO;
 
-namespace dotnetcorecrud.Repositories 
+namespace dotnetcorecrud.Infrastructure.Repositories 
 {
     public class PeopleRepository : BaseRepository, IPeopleRepository
     {
-        public PeopleRepository(DbConfiguration dbConfiguration) : base(dbConfiguration)
+        public PeopleRepository(DatabaseConfiguration databaseConfiguration) : base(databaseConfiguration)
         {
         }
 
-        public IEnumerable<People> GetAll()
+        public IEnumerable<PeopleQueryResponse> GetAll()
         {
             string query = GetQueryFromResource("GetAllPeople");
-            return Connection.Query<People>(query);
+            return Connection.Query<PeopleQueryResponse>(query);
         }
 
-        public People GetPerson(Guid peopleKey)
+        public PeopleQueryResponse GetPerson(Guid peopleKey)
         {
             string query = GetQueryFromResource("GetPeopleByKey");
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("peopleKey", peopleKey, DbType.Guid);
 
-            return Connection.Query<People>(query, parameters).ToList().FirstOrDefault();
+            return Connection.Query<PeopleQueryResponse>(query, parameters).ToList().FirstOrDefault();
         }
     }
 }

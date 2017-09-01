@@ -1,22 +1,23 @@
 using System.Collections.Generic;
-using dotnetcorecrud.Commons;
+using dotnetcorecrud.Infrastructure.Configuration;
+using dotnetcorecrud.Infrastructure.Repositories;
 
-namespace dotnetcorecrud.Repositories 
+namespace dotnetcorecrud.Infrastructure 
 {
     public class TestingUnitOfWork : ITestingUnitOfWork
     {
         private const string DbName = "TestingDatabase"; 
 
-        private IDictionary<string, DbConfiguration> _dbConfiguration;
+        private IDictionary<string, DatabaseConfiguration> _databaseConfiguration;
 
         public TestingUnitOfWork()
         {
 
         }
 
-        public TestingUnitOfWork(IDictionary<string, DbConfiguration> dbConfiguration)
+        public TestingUnitOfWork(IDictionary<string, DatabaseConfiguration> databaseConfiguration)
         {
-            _dbConfiguration = dbConfiguration;
+            _databaseConfiguration = databaseConfiguration;
         }
 
         private IPeopleRepository _peopleRepository;
@@ -27,7 +28,7 @@ namespace dotnetcorecrud.Repositories
             {
                 if (_peopleRepository == null)
                 {
-                    _peopleRepository = new PeopleRepository(_dbConfiguration[DbName]);
+                    _peopleRepository = new PeopleRepository(_databaseConfiguration[DbName]);
                 }
 
                 return _peopleRepository;

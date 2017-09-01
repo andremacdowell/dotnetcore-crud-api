@@ -4,13 +4,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Repositories\SQL\GetAllPeople.sql" />
-    <Content Remove="Repositories\SQL\GetPeopleByKey.sql" />
+    <Content Remove="Infrastructure\SQL\GetAllPeople.sql" />
+    <Content Remove="Infrastructure\SQL\GetPeopleByKey.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Repositories\SQL\GetAllPeople.sql" />
-    <EmbeddedResource Include="Repositories\SQL\GetPeopleByKey.sql" />
+    <EmbeddedResource Include="Infrastructure\SQL\GetAllPeople.sql" />
+    <EmbeddedResource Include="Infrastructure\SQL\GetPeopleByKey.sql" />
   </ItemGroup>
 
   <ItemGroup>
