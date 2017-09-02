@@ -16,19 +16,31 @@ namespace dotnetcorecrud.Processors
             _unitOfWork = unitOfWork;
         }
 
-        public void BatchCreatePeople(IEnumerable<string> peopleNames)
+        public Guid BatchCreatePeople(IEnumerable<string> peopleNames)
         {
-            throw new NotImplementedException();
+            Guid jobId = Guid.NewGuid();
+
+            //TODO
+
+            return jobId;
         }
 
-        public void BatchDeletePeople(IEnumerable<Guid> peopleKeys)
+        public Guid BatchDeletePeople(IEnumerable<Guid> peopleKeys)
         {
-            throw new NotImplementedException();
+            Guid jobId = Guid.NewGuid();
+
+            //TODO
+
+            return jobId;
         }
 
-        public void BatchUpdatePeople(IEnumerable<People> people)
+        public Guid BatchUpdatePeople(IEnumerable<People> people)
         {
-            throw new NotImplementedException();
+            Guid jobId = Guid.NewGuid();
+
+            //TODO
+
+            return jobId;
         }
 
         public People CreatePerson(string personName)

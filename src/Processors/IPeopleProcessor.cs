@@ -12,13 +12,13 @@ namespace dotnetcorecrud.Processors
 
         People UpdatePerson(People person);
         
-        void BatchUpdatePeople(IEnumerable<People> people);
+        Guid BatchUpdatePeople(IEnumerable<People> people);
         
         People DeletePerson(Guid peopleKey);
         
-        void BatchDeletePeople(IEnumerable<Guid> peopleKeys);
+        Guid BatchDeletePeople(IEnumerable<Guid> peopleKeys);
 
-        void BatchCreatePeople(IEnumerable<string> peopleNames);
+        Guid BatchCreatePeople(IEnumerable<string> peopleNames);
         
         People CreatePerson(string personName);
     }
