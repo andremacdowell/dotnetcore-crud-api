@@ -39,9 +39,9 @@ namespace dotnetcorecrud.Application
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Sets up configuration
             IEnumerable<IDatabaseConfiguration> databaseConfigurations = new List<DatabaseConfiguration>();
             foreach(IConfigurationSection configurationSection in Configuration.GetSection("DatabaseConfigurations").GetChildren())
             {
@@ -49,7 +49,7 @@ namespace dotnetcorecrud.Application
                 databaseConfigurations = databaseConfigurations.Append(test);
             }
             
-            // Add Units of Work
+            // Adds Unit of Work
             if (_hostingEnvironment.IsDevelopment())
             {
                 services.AddSingleton<IUnitOfWork, MockUnitOfWork>(
@@ -63,20 +63,23 @@ namespace dotnetcorecrud.Application
                 );
             }
             
-            // Add Processors
+            // Adds Processors
             services.AddSingleton<IPeopleProcessor, PeopleProcessor>();
-            
+        
+            // Adds Memory Cache
+            services.AddMemoryCache();
+         
+            // Adds Mvc
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseMvc();
         }
     }

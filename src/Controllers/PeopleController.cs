@@ -5,16 +5,22 @@ using System.Threading.Tasks;
 using dotnetcorecrud.DomainModel;
 using dotnetcorecrud.Processors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace dotnetcorecrud.Controllers
 {
     [Route("api/[controller]")]
     public class PeopleController : Controller
     {
+        private readonly TimeSpan DefaultMemoryCacheExpiration = TimeSpan.FromSeconds(24 * 3600);
+
+        private IMemoryCache _memoryCache;
+        
         private readonly IPeopleProcessor _peopleProcessor;
 
-        public PeopleController(IPeopleProcessor peopleProcessor)
+        public PeopleController(IMemoryCache memoryCache, IPeopleProcessor peopleProcessor)
         {
+            _memoryCache = memoryCache;
             _peopleProcessor = peopleProcessor;
         }
 
@@ -25,6 +31,23 @@ namespace dotnetcorecrud.Controllers
             IEnumerable<People> result = _peopleProcessor.GetAllPeople();
             
             return result;
+        }
+
+        // GET api/people/batch/<jobKey>
+        [HttpGet("batch/{jobKey}")]
+        public IActionResult GetBatchJobStatus(string jobKey)
+        {
+            JobResult jobResult;
+            IActionResult actionResult = NoContent();
+
+            bool isValid = _memoryCache.TryGetValue<JobResult>(Guid.Parse(jobKey), out jobResult);
+
+            if (isValid)
+            {
+                actionResult = Ok(jobResult);
+            }
+            
+            return actionResult;
         }
 
         // GET api/people/<peopleKey>
@@ -49,9 +72,17 @@ namespace dotnetcorecrud.Controllers
         [HttpPost("batch")]
         public IActionResult BatchPost([FromBody]IEnumerable<string> peopleNames)
         {
-            _peopleProcessor.BatchCreatePeople(peopleNames);
+            Guid jobKey = _peopleProcessor.BatchCreatePeople(peopleNames);
 
-            return Accepted();
+            IDictionary<string, string> responseDict = new Dictionary<string, string>();
+            responseDict.Add("JobKey", jobKey.ToString());
+
+            var cacheEntryOptions = 
+                new MemoryCacheEntryOptions().SetSlidingExpiration(DefaultMemoryCacheExpiration); 
+
+            _memoryCache.Set(jobKey, new JobResult("POST", false), cacheEntryOptions);
+
+            return Accepted(responseDict);
         }
 
         // PUT api/people
@@ -67,9 +98,17 @@ namespace dotnetcorecrud.Controllers
         [HttpPut("batch")]
         public IActionResult BatchPut([FromBody]IEnumerable<People> people)
         {
-            _peopleProcessor.BatchUpdatePeople(people);
+            Guid jobKey = _peopleProcessor.BatchUpdatePeople(people);
+            
+            IDictionary<string, string> responseDict = new Dictionary<string, string>();
+            responseDict.Add("JobKey", jobKey.ToString());
 
-            return Accepted();
+            var cacheEntryOptions = 
+                new MemoryCacheEntryOptions().SetSlidingExpiration(DefaultMemoryCacheExpiration); 
+
+            _memoryCache.Set(jobKey, new JobResult("PUT", false), cacheEntryOptions);
+
+            return Accepted(responseDict);
         }
 
         // DELETE api/people/<peopleKey>
@@ -85,9 +124,18 @@ namespace dotnetcorecrud.Controllers
         [HttpDelete("batch")]
         public IActionResult BatchDelete([FromBody]IEnumerable<string> peopleKeys)
         {
-            _peopleProcessor.BatchDeletePeople(peopleKeys.Select(x => Guid.Parse(x)));
+            Guid jobKey = 
+                _peopleProcessor.BatchDeletePeople(peopleKeys.Select(x => Guid.Parse(x)));
 
-            return Accepted();
+            IDictionary<string, string> responseDict = new Dictionary<string, string>();
+            responseDict.Add("JobKey", jobKey.ToString());
+
+            var cacheEntryOptions = 
+                new MemoryCacheEntryOptions().SetSlidingExpiration(DefaultMemoryCacheExpiration); 
+
+            _memoryCache.Set(jobKey, new JobResult("DELETE", false), cacheEntryOptions);
+
+            return Accepted(responseDict);
         }
     }
 }
