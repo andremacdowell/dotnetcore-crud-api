@@ -8,10 +8,10 @@ using System.Reflection;
 using System.Text;
 using Dapper;
 using dotnetcorecrud.Infrastructure.Configuration;
-using dotnetcorecrud.Infrastructure;
+using dotnetcorecrud.Infrastructure.Repositories;
 using dotnetcorecrud.DomainModel.DTO;
 
-namespace dotnetcorecrud.Infrastructure.Repositories 
+namespace dotnetcorecrud.Infrastructure.Dapper 
 {
     public class PeopleRepository : BaseRepository, IPeopleRepository
     {

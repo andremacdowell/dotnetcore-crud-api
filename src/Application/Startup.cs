@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using dotnetcorecrud.Infrastructure.Configuration;
 using dotnetcorecrud.Processors;
-using dotnetcorecrud.Infrastructure;
+using dotnetcorecrud.Infrastructure.Repositories;
+using dotnetcorecrud.Infrastructure.Dapper;
+using dotnetcorecrud.Infrastructure.Mock;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,12 +21,17 @@ namespace dotnetcorecrud.Application
 {
     public class Startup
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
         public Startup(IHostingEnvironment hostingEnvironment)
         {
+            _hostingEnvironment = hostingEnvironment;
+
+            // Sets up Configuration Handling
             var builder = new ConfigurationBuilder()
-                .SetBasePath(hostingEnvironment.ContentRootPath)
+                .SetBasePath(_hostingEnvironment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true);
+                .AddJsonFile($"appsettings.{_hostingEnvironment.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -43,20 +50,29 @@ namespace dotnetcorecrud.Application
             }
             
             // Add Units of Work
-            services.AddSingleton<ITestingUnitOfWork, TestingUnitOfWork>(
-                (serviceProvider) => new TestingUnitOfWork(databaseConfigurations)
-            );
+            if (_hostingEnvironment.IsDevelopment())
+            {
+                services.AddSingleton<IUnitOfWork, MockUnitOfWork>(
+                    (serviceProvider) => new MockUnitOfWork(databaseConfigurations)
+                );
+            }
+            else
+            {
+                services.AddSingleton<IUnitOfWork, UnitOfWork>(
+                    (serviceProvider) => new UnitOfWork(databaseConfigurations)
+                );
+            }
             
             // Add Processors
             services.AddSingleton<IPeopleProcessor, PeopleProcessor>();
-
+            
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment hostingEnvironment)
         {
-            if (env.IsDevelopment())
+            if (hostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using dotnetcorecrud.Infrastructure.Configuration;
 
-namespace dotnetcorecrud.Infrastructure
+namespace dotnetcorecrud.Infrastructure.Dapper
 {
     public class BaseRepository
     {
