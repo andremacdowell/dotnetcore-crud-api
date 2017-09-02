@@ -18,7 +18,7 @@ namespace dotnetcorecrud.Controllers
             _peopleProcessor = peopleProcessor;
         }
 
-        // GET api/people
+        // GET api/people/all
         [HttpGet("all")]
         public IEnumerable<People> GetAll()
         {
@@ -36,32 +36,58 @@ namespace dotnetcorecrud.Controllers
             return result;
         }
 
+        // POST api/people
+        [HttpPost]
+        public IActionResult Post([FromBody]string personName)
+        {
+            People result = _peopleProcessor.CreatePerson(personName);
+
+            return Created("api/people", result);
+        }
+
+        // POST api/people/batch
+        [HttpPost("batch")]
+        public IActionResult BatchPost([FromBody]IEnumerable<string> peopleNames)
+        {
+            _peopleProcessor.BatchCreatePeople(peopleNames);
+
+            return Accepted();
+        }
+
         // PUT api/people
         [HttpPut]
         public People Put([FromBody]People person)
         {
-            throw new NotImplementedException();
+            People result = _peopleProcessor.UpdatePerson(person);
+
+            return result;
         }
 
         // PUT api/people/batch
         [HttpPut("batch")]
-        public void BatchPut(Guid peopleKey)
+        public IActionResult BatchPut([FromBody]IEnumerable<People> people)
         {
-            throw new NotImplementedException();
+            _peopleProcessor.BatchUpdatePeople(people);
+
+            return Accepted();
         }
 
         // DELETE api/people/<peopleKey>
         [HttpDelete("{key}")]
-        public void Delete(Guid peopleKey)
+        public People Delete(string peopleKey)
         {
-            throw new NotImplementedException();
+            People person = _peopleProcessor.DeletePerson(Guid.Parse(peopleKey));
+
+            return person;
         }
 
-        // DELETE api/people/<peopleKey>
+        // DELETE api/people/batch
         [HttpDelete("batch")]
-        public void BatchDelete(Guid peopleKey)
+        public IActionResult BatchDelete([FromBody]IEnumerable<string> peopleKeys)
         {
-            throw new NotImplementedException();
+            _peopleProcessor.BatchDeletePeople(peopleKeys.Select(x => Guid.Parse(x)));
+
+            return Accepted();
         }
     }
 }
